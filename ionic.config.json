@@ -1,0 +1,7 @@
+{
+  "name": "maToDoList",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
