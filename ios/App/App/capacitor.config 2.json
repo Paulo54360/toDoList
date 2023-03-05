@@ -1,0 +1,6 @@
+{
+	"appId": "com.maToDoList.app",
+	"appName": "maToDoList",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

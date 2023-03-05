@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "Faire les courses",
+    "description": "Acheter du lait, du pain et des oeufs",
+    "completed": false
+  },
+  {
+    "id": 2,
+    "title": "Appeler le médecin",
+    "description": "Prendre rendez-vous pour la semaine prochaine",
+    "completed": false
+  },
+  {
+    "id": 3,
+    "title": "Aller à la salle de sport",
+    "description": "Faire une séance de musculation et de cardio",
+    "completed": false
+  }
+]
