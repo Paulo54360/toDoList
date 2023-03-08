@@ -11,7 +11,7 @@ export class TaskService {
   constructor(private http: HttpClient) { }
 
   getTasks() {
-    return this.http.get<Task[]>('./assets/task.json"');
+    return this.http.get<Task[]>('http://localhost:8080/assets/tasks.json');
   }
 
 }
