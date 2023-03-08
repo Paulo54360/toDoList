@@ -1,15 +1,20 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      Task List
+      Tasks
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
   <ion-list>
     <ion-item *ngFor="let task of tasks">
-      <ion-label>{{ task.title }}</ion-label>
+      {{ task.name }}
+      <ion-button slot="end" (click)="deleteTask(task.id)">Delete</ion-button>
     </ion-item>
   </ion-list>
+  <ion-item>
+    <ion-input [(ngModel)]="taskName"></ion-input>
+    <ion-button (click)="addTask()">Add Task</ion-button>
+  </ion-item>
 </ion-content>

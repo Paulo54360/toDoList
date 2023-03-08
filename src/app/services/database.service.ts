@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SQLite } from '@ionic-native/sqlite/ngx';
+import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
 
 @Injectable({
   providedIn: 'root',
@@ -25,34 +25,26 @@ export class DatabaseService {
 
   async addTask(taskName: string) {
     const db = await this.getDB();
-    return db.executeSql(`INSERT INTO tasks (task) VALUES (?)`, [taskName]);
-  }
-
-  async tableExists(tableName: string): Promise<boolean> {
-    const db = await this.getDB();
-    const res = await db.executeSql(
-      `SELECT name FROM sqlite_master WHERE type='table' AND name=?;`,
-      [tableName]
-    );
-    return res.rows.length > 0;
+    return db.executeSql(`INSERT INTO tasks (name) VALUES (?)`, [taskName]);
   }
 
   async getTasks() {
-    if (await this.tableExists('tasks')) {
-      const db = await this.getDB();
-      const res = await db.executeSql(`SELECT * FROM tasks`, []);
+    const db = await this.getDB();
+    return db.executeSql(`SELECT * FROM tasks`, []).then(res => {
       const tasks = [];
       for (let i = 0; i < res.rows.length; i++) {
         tasks.push(res.rows.item(i));
       }
       return tasks;
-    } else {
-      return [];
-    }
+    });
   }
 
-  async deleteTask(taskId: number) {
-    const db = await this.getDB();
-    return db.executeSql(`DELETE FROM tasks WHERE id = ?`, [taskId]);
+  async deleteTask(taskId: number): Promise<void> {
+    try {
+      const db = await this.getDB();
+      await db.executeSql('DELETE FROM tasks WHERE id = ?', [taskId]);
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
