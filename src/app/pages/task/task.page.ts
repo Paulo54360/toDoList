@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
+import { TaskService } from '@services/task.service';
 
 import { Task } from '@interfaces/task.interface';
-import { TaskService } from '@services/task.service';
 
 @Component({
   selector: 'app-task',
@@ -14,7 +14,7 @@ export class TaskPage {
   constructor(private taskService: TaskService) {}
 
   ionViewDidEnter() {
-    this.taskService.getTasks().subscribe(tasks => {
+    this.taskService.getTasks().subscribe((tasks: Task[]) => {
       this.tasks = tasks;
     });
   }
