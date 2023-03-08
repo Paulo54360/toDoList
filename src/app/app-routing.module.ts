@@ -5,19 +5,19 @@ const routes: Routes = [
   {
     path: '',
     redirectTo: '/task',
-    pathMatch: 'full'
-
+    pathMatch: 'full',
   },
   {
     path: 'task',
-    loadChildren: () => import('./pages/task/task.module').then(m => m.TaskPageModule)
+    loadChildren: () =>
+      import('./pages/task/task.module').then(m => m.TaskPageModule),
   },
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
   ],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
