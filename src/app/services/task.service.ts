@@ -1,69 +1,35 @@
 import { Injectable } from '@angular/core';
-
-import { Task } from '@interfaces/task.interface';
+import { SQLiteObject } from '@ionic-native/sqlite/ngx';
 
 import { DatabaseService } from './database.service';
+import { Task } from '../interfaces/task.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TaskService {
-  tasks: Task[] = [];
-
-  constructor(private database: DatabaseService) {}
+  constructor(private databaseService: DatabaseService) {}
 
   async getTasks(): Promise<Task[]> {
+    const db = await this.databaseService.getDB();
+    const res = await db.executeSql(`SELECT * FROM tasks`, []);
     const tasks: Task[] = [];
-    try {
-      const result = await this.database.db.executeSql(
-        'SELECT * FROM tasks',
-        []
-      );
-      for (let i = 0; i < result.rows.length; i++) {
-        tasks.push({
-          id: result.rows.item(i).id,
-          name: result.rows.item(i).name,
-          description: result.rows.item(i).description,
-          completed: result.rows.item(i).completed, // Renommez la propriété complete en completed
-        });
-      }
-      console.log('Tasks fetched');
-    } catch (error) {
-      console.error('Error fetching tasks', error);
+    for (let i = 0; i < res.rows.length; i++) {
+      tasks.push(res.rows.item(i));
     }
     return tasks;
   }
 
-  async addTask(task: Task): Promise<void> {
-    try {
-      await this.database.db.executeSql(
-        'INSERT INTO tasks(name, description, completed) VALUES (?, ?, ?)',
-        [task.name, task.description, task.completed ? 1 : 0]
-      );
-      console.log('Task added');
-    } catch (error) {
-      console.error('Error adding task', error);
-    }
+  async addTask(taskName: string): Promise<void> {
+    const db = await this.databaseService.getDB();
+    await db.executeSql(
+      `INSERT INTO tasks (title, description, complete) VALUES (?, ?, ?)`,
+      [taskName, '', false]
+    );
   }
 
-  async updateTask(task: Task): Promise<void> {
-    try {
-      await this.database.db.executeSql(
-        'UPDATE tasks SET name = ?, description = ?, completed = ? WHERE id = ?',
-        [task.name, task.description, task.completed ? 1 : 0, task.id]
-      );
-      console.log('Task updated');
-    } catch (error) {
-      console.error('Error updating task', error);
-    }
-  }
-
-  async deleteTask(id: number): Promise<void> {
-    try {
-      await this.database.db.executeSql('DELETE FROM tasks WHERE id = ?', [id]);
-      console.log('Task deleted');
-    } catch (error) {
-      console.error('Error deleting task', error);
-    }
+  async deleteTask(taskId: number): Promise<void> {
+    const db = await this.databaseService.getDB();
+    await db.executeSql(`DELETE FROM tasks WHERE id = ?`, [taskId]);
   }
 }

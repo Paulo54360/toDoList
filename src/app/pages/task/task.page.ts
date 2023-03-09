@@ -14,22 +14,18 @@ export class TaskPage {
 
   constructor(private taskService: TaskService) {}
 
-  ionViewWillEnter() {
-    this.getTasks();
-  }
-
-  async getTasks() {
+  async ionViewWillEnter() {
     this.tasks = await this.taskService.getTasks();
   }
 
   async addTask() {
     await this.taskService.addTask(this.taskName);
     this.taskName = '';
-    await this.getTasks();
+    this.tasks = await this.taskService.getTasks();
   }
 
   async deleteTask(taskId: number) {
     await this.taskService.deleteTask(taskId);
-    await this.getTasks();
+    this.tasks = await this.taskService.getTasks();
   }
 }
