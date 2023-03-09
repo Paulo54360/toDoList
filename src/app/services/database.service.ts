@@ -5,22 +5,45 @@ import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
   providedIn: 'root',
 })
 export class DatabaseService {
+  db!: SQLiteObject;
+
   constructor(private sqlite: SQLite) {}
 
-  async getDB() {
-    const db = await this.sqlite.create({
-      name: 'tasks.db',
-      location: 'default',
-    });
-    return db;
+  async createDatabase() {
+    try {
+      if (!this.db) {
+        this.db = await this.sqlite.create({
+          name: 'data.db',
+          location: 'default',
+        });
+        await this.createTaskTable(); // Ajoutez cette ligne pour créer la table des tâches
+        console.log('Database created');
+      }
+    } catch (error) {
+      console.error('Error opening database', error);
+    }
+    return this.db;
   }
 
-  async createTasksTable() {
-    const db = await this.getDB();
-    return db.executeSql(
-      `CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)`,
-      []
-    );
+  createTaskTable() {
+    this.sqlite
+      .create({
+        name: 'data.db',
+        location: 'default',
+      })
+      .then((db: SQLiteObject) => {
+        this.db = db;
+        if (this.db) {
+          this.db
+            .executeSql(
+              'CREATE TABLE IF NOT EXISTS tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT, isChecked INTEGER)',
+              []
+            )
+            .then(() => console.log('Table created'))
+            .catch(error => console.error('Error creating table', error));
+        }
+      })
+      .catch(error => console.error('Error opening database', error));
   }
 
   async addTask(taskName: string) {
