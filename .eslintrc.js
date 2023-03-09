@@ -1,4 +1,5 @@
 module.exports = {
+  workingDirectory: './src',
   settings: {
     'import/resolver': {
       typescript: {

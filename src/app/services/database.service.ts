@@ -10,14 +10,23 @@ export class DatabaseService {
   constructor(private sqlite: SQLite) {}
 
   async getDB(): Promise<SQLiteObject> {
+    console.log('getDB called');
     if (this.database) {
+      console.log('database already exists');
       return Promise.resolve(this.database);
     } else {
-      this.database = await this.sqlite.create({
-        name: 'tasks.db',
-        location: 'default',
-      });
-      return Promise.resolve(this.database);
+      try {
+        const db = await this.sqlite.create({
+          name: 'tasks.db',
+          location: 'default',
+        });
+        console.log('database created');
+        this.database = db;
+        return Promise.resolve(db);
+      } catch (error) {
+        console.error('unable to create database', error);
+        return Promise.reject(error);
+      }
     }
   }
 

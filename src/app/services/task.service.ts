@@ -15,6 +15,9 @@ export class TaskService {
     if (!db) {
       return [];
     }
+    console.log(await this.databaseService.initDB(), 'initDB');
+    await this.databaseService.initDB();
+
     const res = await db.executeSql(`SELECT * FROM tasks`, []);
     const tasks: Task[] = [];
     for (let i = 0; i < res.rows.length; i++) {
@@ -25,20 +28,22 @@ export class TaskService {
 
   async addTask(taskName: string): Promise<void> {
     const db = await this.databaseService.getDB();
-    if (!db) {
-      console.error('unable to get database instance');
-      return;
+    if (db) {
+      try {
+        await db.transaction(tx => {
+          tx.executeSql(
+            `INSERT INTO tasks (title, description, complete) VALUES (?, ?, ?)`,
+            [taskName, '', false],
+            () => console.log('Task added successfully'),
+            (tx: any, error: any) => console.error('Unable to add task', error)
+          );
+        });
+      } catch (error) {
+        console.error('Unable to execute transaction', error);
+      }
+    } else {
+      console.error('Unable to get database instance');
     }
-
-    console.log('adding task to database');
-    await db
-      .executeSql(
-        `INSERT INTO tasks (title, description, complete) VALUES (?, ?, ?)`,
-        [taskName, '', false]
-      )
-      .catch(error => {
-        console.error('error adding task to database', error);
-      });
   }
 
   async deleteTask(taskId: number): Promise<void> {
