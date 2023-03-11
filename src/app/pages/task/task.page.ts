@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-
 import { Task } from '@interfaces/task.interface';
 import { TaskService } from '@services/task.service';
 
@@ -24,8 +23,8 @@ export class TaskPage {
     this.tasks = await this.taskService.getTasks();
   }
 
-  async deleteTask(taskId: number) {
-    await this.taskService.deleteTask(taskId);
+  async removeTask(id: number) {
+    await this.taskService.removeTask(id);
     this.tasks = await this.taskService.getTasks();
   }
 }

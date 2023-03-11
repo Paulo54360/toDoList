@@ -10,6 +10,7 @@ import { TaskService } from '@services/task.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { SQLite } from '@ionic-native/sqlite/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,19 +25,6 @@ import { AppComponent } from './app.component';
     SplashScreen,
     TaskService,
     SQLite,
-    {
-      provide: SQLiteDBConnectionToken,
-      useFactory: async (sqlite: SQLite) => {
-        return await initSQLiteDB(
-          'myDB',
-          1,
-          'My super important database',
-          2 * 1024 * 1024,
-          sqlite
-        );
-      },
-      deps: [SQLite],
-    },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent],

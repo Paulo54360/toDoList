@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-
-import { DatabaseService } from './database.service';
-import { Task } from '../interfaces/task.interface';
+import { Task } from '@interfaces/task.interface';
+import { DatabaseService } from '@services/database.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,43 +9,42 @@ export class TaskService {
   constructor(private databaseService: DatabaseService) {}
 
   async getTasks(): Promise<Task[]> {
-    const db = await this.databaseService.getDB();
-    if (!db) {
+    const query = 'SELECT * FROM tasks ORDER BY id DESC';
+    const result = await this.databaseService.executeSQL(query);
+
+    if (result?.rows) {
+      const tasks: Task[] = [];
+      for (let i = 0; i < result.rows.length; i++) {
+        const item = result.rows.item(i);
+        tasks.push({ id: item.id, name: item.name });
+      }
+      return tasks;
+    } else {
       return [];
     }
-    const res = await db.executeSql(
-      `SELECT *
-                                     FROM tasks`,
-      []
-    );
-    const tasks: Task[] = [];
-    for (let i = 0; i < res.rows.length; i++) {
-      tasks.push(res.rows.item(i));
-    }
-    return tasks;
   }
 
-  async addTask(taskName: string): Promise<void> {
-    const db = await this.databaseService.getDB();
-    if (db) {
-      try {
-        await db.transaction(tx => {
-          tx.executeSql(
-            `INSERT INTO tasks (name, completed)
-             VALUES (?, ?)`,
-            [taskName, 0],
-            () => console.log('Task added successfully'),
-            (tx: any, error: any) => console.error('Unable to add task', error)
-          );
-        });
-      } catch (error) {
-        console.error('Unable to add task', error);
-      }
+  async addTask(name: string): Promise<boolean> {
+    const query = 'INSERT INTO tasks (name) VALUES (?)';
+    const params = [name];
+    try {
+      await this.databaseService.executeSQL(query, params);
+      return true;
+    } catch (error) {
+      console.error('Error during addTask', error);
+      return false;
     }
   }
 
-  async deleteTask(taskId: number): Promise<void> {
-    const db = await this.databaseService.getDB();
-    await db.executeSql(`DELETE FROM tasks WHERE id = ?`, [taskId]);
+  async removeTask(id: number): Promise<boolean> {
+    const query = 'DELETE FROM tasks WHERE id = ?';
+    const params = [id];
+    try {
+      await this.databaseService.executeSQL(query, params);
+      return true;
+    } catch (error) {
+      console.error('Error during removeTask', error);
+      return false;
+    }
   }
 }
