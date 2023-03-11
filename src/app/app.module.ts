@@ -23,6 +23,20 @@ import { AppComponent } from './app.component';
     StatusBar,
     SplashScreen,
     TaskService,
+    SQLite,
+    {
+      provide: SQLiteDBConnectionToken,
+      useFactory: async (sqlite: SQLite) => {
+        return await initSQLiteDB(
+          'myDB',
+          1,
+          'My super important database',
+          2 * 1024 * 1024,
+          sqlite
+        );
+      },
+      deps: [SQLite],
+    },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent],

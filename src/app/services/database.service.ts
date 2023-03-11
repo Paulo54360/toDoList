@@ -10,9 +10,7 @@ export class DatabaseService {
   constructor(private sqlite: SQLite) {}
 
   async getDB(): Promise<SQLiteObject> {
-    console.log('getDB called');
     if (this.database) {
-      console.log('database already exists');
       return Promise.resolve(this.database);
     } else {
       try {
@@ -20,7 +18,6 @@ export class DatabaseService {
           name: 'tasks.db',
           location: 'default',
         });
-        console.log('database created');
         this.database = db;
         return Promise.resolve(db);
       } catch (error) {
@@ -42,5 +39,22 @@ export class DatabaseService {
     `,
       []
     );
+  }
+
+  async addTask(name: string): Promise<any> {
+    const db = await this.getDB();
+    const data = [name];
+    return await db.executeSql('INSERT INTO tasks (name) VALUES (?)', data);
+  }
+
+  async deleteTask(id: number): Promise<any> {
+    const db = await this.getDB();
+    const data = [id];
+    return await db.executeSql('DELETE FROM tasks WHERE id = ?', data);
+  }
+
+  async getTasks(): Promise<any> {
+    const db = await this.getDB();
+    return await db.executeSql('SELECT * FROM tasks', []);
   }
 }

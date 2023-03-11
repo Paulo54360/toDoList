@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { SQLiteObject } from '@ionic-native/sqlite/ngx';
 
 import { DatabaseService } from './database.service';
 import { Task } from '../interfaces/task.interface';
@@ -15,10 +14,11 @@ export class TaskService {
     if (!db) {
       return [];
     }
-    console.log(await this.databaseService.initDB(), 'initDB');
-    await this.databaseService.initDB();
-
-    const res = await db.executeSql(`SELECT * FROM tasks`, []);
+    const res = await db.executeSql(
+      `SELECT *
+                                     FROM tasks`,
+      []
+    );
     const tasks: Task[] = [];
     for (let i = 0; i < res.rows.length; i++) {
       tasks.push(res.rows.item(i));
@@ -32,17 +32,16 @@ export class TaskService {
       try {
         await db.transaction(tx => {
           tx.executeSql(
-            `INSERT INTO tasks (title, description, complete) VALUES (?, ?, ?)`,
-            [taskName, '', false],
+            `INSERT INTO tasks (name, completed)
+             VALUES (?, ?)`,
+            [taskName, 0],
             () => console.log('Task added successfully'),
             (tx: any, error: any) => console.error('Unable to add task', error)
           );
         });
       } catch (error) {
-        console.error('Unable to execute transaction', error);
+        console.error('Unable to add task', error);
       }
-    } else {
-      console.error('Unable to get database instance');
     }
   }
 
