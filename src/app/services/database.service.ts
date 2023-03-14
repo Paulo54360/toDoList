@@ -27,7 +27,8 @@ export class DatabaseService {
 
     // Crée la table "tasks"
     const createTableQuery =
-      'CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, name TEXT)';
+      'CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, name TEXT, description TEXT, completed INTEGER DEFAULT 0)';
+
     try {
       await this.database.executeSql(createTableQuery);
       return true;
